@@ -14,17 +14,18 @@ nav{position:relative;z-index:1;display:flex;align-items:flex-start;gap:.5rem;pa
 .day-tabs{display:flex;flex:1;flex-wrap:wrap;gap:inherit;min-width:0}
 button{font:inherit;min-height:44px;padding:.4rem .8rem;border-radius:.4rem;cursor:pointer}
 nav button{color:#f5fbf4;background:transparent;border:1px solid #829889}
-nav button[aria-current="page"],.music-toggle[aria-expanded="true"]{background:#f5fbf4;color:#243b30}
+nav button[aria-current="page"]{background:#f5fbf4;color:#243b30}
 nav button:focus-visible{outline:2px solid #9fbea8;outline-offset:2px}
 nav .short-day{display:none}
-.music-toggle{display:grid;place-items:center;flex:0 0 44px;padding:0}
-.music-toggle svg{width:1.25rem;height:1.25rem}
-.music-panel{position:absolute;inset-block-start:calc(100% + .4rem);inset-inline-end:max(.5rem,env(safe-area-inset-right));width:min(24rem,calc(100vw - 1rem));max-height:calc(100dvh - 5rem);overflow:auto;padding:.75rem;border:1px solid #cddbcf;border-radius:.6rem;background:#fbfdf9;box-shadow:0 .4rem 1.4rem #20312740}
+nav .music-toggle{display:grid;place-items:center;flex:0 0 44px;padding:0;color:#6f8978;border-color:transparent}
+.music-toggle:is(:hover,:focus-visible,[aria-expanded="true"]){color:#c3dbc9}
+.music-toggle svg{width:.8rem;height:.8rem}
+.music-panel{position:absolute;inset-block-start:calc(100% + .4rem);inset-inline-end:max(.5rem,env(safe-area-inset-right));width:min(24rem,calc(100vw - 1rem));max-height:calc(100dvh - 5rem);overflow:auto;padding:.6rem;border:1px solid #cddbcf;border-radius:.6rem;background:#fbfdf9;box-shadow:0 .4rem 1.4rem #20312740}
 .music-heading{display:flex;justify-content:space-between;align-items:center;gap:.5rem;margin-bottom:.6rem}
 .music-heading h2{margin:0;font:normal 1.15rem/1.2 Georgia,serif}
 .music-heading p{margin:.12rem 0 0;color:#4c6053;font-size:.85rem}
 .music-panel .music-close{flex:0 0 44px;padding:0;background:#e6eee5;color:#243b30;border-color:#cddbcf;font-size:1.25rem}
-.music-panel iframe{display:block;width:100%;min-height:200px;aspect-ratio:16/9;border:0;border-radius:.38rem;background:#203127}
+.music-panel iframe{display:block;width:100%;height:144px;border:0;border-radius:.38rem;background:#e6eee5}
 .music-panel a{display:inline-block;margin-top:.45rem;color:#265648;font-size:.83rem}
 @media(max-width:600px){
   nav{gap:.25rem;padding-inline:max(.5rem,env(safe-area-inset-left)) max(.5rem,env(safe-area-inset-right))}
@@ -55,7 +56,7 @@ form button{background:#243b30;color:#f5fbf4;border:0}
     <button type="button" data-day="misc">Misc</button>
     <button type="button" data-day="todo">To-do</button>
   </div>
-  <button type="button" id="music-toggle" class="music-toggle" aria-label="Trip music" title="Trip music" aria-controls="music-panel" aria-expanded="false">
+  <button type="button" id="music-toggle" class="music-toggle" aria-label="Trip music" aria-controls="music-panel" aria-expanded="false">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
       <path d="M9 18V5l12-2v13M9 8l12-2"/>
       <ellipse cx="6" cy="18" rx="3" ry="2"/>
@@ -67,8 +68,8 @@ form button{background:#243b30;color:#f5fbf4;border:0}
       <div><h2 id="music-title">Dancing in the Moonlight</h2><p>Toploader</p></div>
       <button type="button" id="music-close" class="music-close" aria-label="Close music player"><span aria-hidden="true">×</span></button>
     </div>
-    <div id="music-video"></div>
-    <a id="music-link" target="_blank" rel="noopener noreferrer">Open on YouTube</a>
+    <div id="music-audio"></div>
+    <a id="music-link" target="_blank" rel="noopener noreferrer">Open in Spotify</a>
   </section>
 </nav>
 <iframe id="page" title="Itinerary" referrerpolicy="no-referrer" hidden></iframe>
@@ -81,15 +82,15 @@ const frame = document.getElementById("page");
 const status = document.getElementById("status");
 const musicToggle = document.getElementById("music-toggle");
 const musicPanel = document.getElementById("music-panel");
-const musicVideo = document.getElementById("music-video");
-const videoId = "0yBnIUX0QAE";
-document.getElementById("music-link").href = `https://www.youtube.com/watch?v=${videoId}`;
+const musicAudio = document.getElementById("music-audio");
+const trackId = "118qWAedBHAjTZRFV2xDBw";
+document.getElementById("music-link").href = `https://open.spotify.com/track/${trackId}`;
 let pages;
 let activeDay;
 
 function closeMusic() {
   musicPanel.hidden = true;
-  musicVideo.replaceChildren();
+  musicAudio.replaceChildren();
   musicToggle.setAttribute("aria-expanded", "false");
   musicToggle.focus();
 }
@@ -102,11 +103,12 @@ musicToggle.addEventListener("click", () => {
   musicPanel.hidden = false;
   musicToggle.setAttribute("aria-expanded", "true");
   const player = document.createElement("iframe");
-  player.title = "Toploader – Dancing in the Moonlight";
-  player.allow = "autoplay; encrypted-media; fullscreen; picture-in-picture";
-  player.referrerPolicy = "strict-origin-when-cross-origin";
-  player.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&playsinline=1`;
-  musicVideo.append(player);
+  player.title = "Audio player: Dancing in the Moonlight by Toploader";
+  player.allow = "autoplay; encrypted-media";
+  player.referrerPolicy = "no-referrer";
+  // Spotify uses the audio layout below the video player's minimum height.
+  player.src = `https://open.spotify.com/embed/track/${trackId}?theme=0`;
+  musicAudio.append(player);
 });
 document.getElementById("music-close").addEventListener("click", closeMusic);
 document.addEventListener("keydown", event => {
