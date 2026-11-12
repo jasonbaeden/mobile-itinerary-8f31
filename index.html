@@ -25,7 +25,7 @@ nav .music-toggle{display:grid;place-items:center;flex:0 0 44px;padding:0;color:
 .music-heading h2{margin:0;font:normal 1.15rem/1.2 Georgia,serif}
 .music-heading p{margin:.12rem 0 0;color:#4c6053;font-size:.85rem}
 .music-panel .music-close{flex:0 0 44px;padding:0;background:#e6eee5;color:#243b30;border-color:#cddbcf;font-size:1.25rem}
-.music-panel iframe{display:block;width:100%;height:144px;border:0;border-radius:.38rem;background:#e6eee5}
+.music-panel iframe{display:block;width:100%;min-height:200px;aspect-ratio:16/9;border:0;border-radius:.38rem;background:#203127}
 .music-panel a{display:inline-block;margin-top:.45rem;color:#265648;font-size:.83rem}
 @media(max-width:600px){
   nav{gap:.25rem;padding-inline:max(.5rem,env(safe-area-inset-left)) max(.5rem,env(safe-area-inset-right))}
@@ -68,8 +68,8 @@ form button{background:#243b30;color:#f5fbf4;border:0}
       <div><h2 id="music-title">Dancing in the Moonlight</h2><p>Toploader</p></div>
       <button type="button" id="music-close" class="music-close" aria-label="Close music player"><span aria-hidden="true">×</span></button>
     </div>
-    <div id="music-audio"></div>
-    <a id="music-link" target="_blank" rel="noopener noreferrer">Open in Spotify</a>
+    <div id="music-video"></div>
+    <a id="music-link" target="_blank" rel="noopener noreferrer">Open on YouTube</a>
   </section>
 </nav>
 <iframe id="page" title="Itinerary" referrerpolicy="no-referrer" hidden></iframe>
@@ -82,15 +82,15 @@ const frame = document.getElementById("page");
 const status = document.getElementById("status");
 const musicToggle = document.getElementById("music-toggle");
 const musicPanel = document.getElementById("music-panel");
-const musicAudio = document.getElementById("music-audio");
-const trackId = "118qWAedBHAjTZRFV2xDBw";
-document.getElementById("music-link").href = `https://open.spotify.com/track/${trackId}`;
+const musicVideo = document.getElementById("music-video");
+const videoId = "0yBnIUX0QAE";
+document.getElementById("music-link").href = `https://www.youtube.com/watch?v=${videoId}`;
 let pages;
 let activeDay;
 
 function closeMusic() {
   musicPanel.hidden = true;
-  musicAudio.replaceChildren();
+  musicVideo.replaceChildren();
   musicToggle.setAttribute("aria-expanded", "false");
   musicToggle.focus();
 }
@@ -103,12 +103,11 @@ musicToggle.addEventListener("click", () => {
   musicPanel.hidden = false;
   musicToggle.setAttribute("aria-expanded", "true");
   const player = document.createElement("iframe");
-  player.title = "Audio player: Dancing in the Moonlight by Toploader";
-  player.allow = "autoplay; encrypted-media";
-  player.referrerPolicy = "no-referrer";
-  // Spotify uses the audio layout below the video player's minimum height.
-  player.src = `https://open.spotify.com/embed/track/${trackId}?theme=0`;
-  musicAudio.append(player);
+  player.title = "Toploader – Dancing in the Moonlight";
+  player.allow = "autoplay; encrypted-media; fullscreen; picture-in-picture";
+  player.referrerPolicy = "strict-origin-when-cross-origin";
+  player.src = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&playsinline=1`;
+  musicVideo.append(player);
 });
 document.getElementById("music-close").addEventListener("click", closeMusic);
 document.addEventListener("keydown", event => {
